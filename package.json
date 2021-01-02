@@ -1,0 +1,27 @@
+{
+  "name": "denise_horse",
+  "version": "1.0.0",
+  "description": "denise horseeeee",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tiffwu1027/denise_horse.git"
+  },
+  "author": "Tiffany Wu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tiffwu1027/denise_horse/issues"
+  },
+  "homepage": "https://github.com/tiffwu1027/denise_horse#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "three": "^0.124.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
