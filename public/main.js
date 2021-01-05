@@ -1,8 +1,12 @@
 import * as THREE from '/build/three.module.js';
 import {OrbitControls} from '/jsm/controls/OrbitControls.js';
 import {GLTFLoader} from '/jsm/loaders/GLTFLoader.js';
+// import World from './world.js';
 
+const container = document.querySelector('#scene-container');
 
+// const world = new World(container);
+// world.render();
 // define some essential variables:
 let scene, renderer, camera, gltfLoader;
 
@@ -80,7 +84,7 @@ gltfLoader = new GLTFLoader();
 
 const clock = new THREE.Clock();
 let horseScene;
-gltfLoader.load( './assets/Horse.glb', function ( gltf ) {
+gltfLoader.load( './assets/deniseHorseReal.glb', function ( gltf ) {
     horseScene = gltf.scene;
     const clip = gltf.animations[0];
     const mixer = new THREE.AnimationMixer(horseScene.children[0]);
@@ -124,7 +128,7 @@ var skyboxMaterial = new THREE.MeshBasicMaterial({
   });
 
 
-  var skyboxGeometry = new THREE.BoxGeometry(100,100,100);
+  var skyboxGeometry = new THREE.BoxGeometry(1000,1000,1000);
   var skybox = new THREE.Mesh(skyboxGeometry,skyboxMaterial);
   scene.add(skybox);
   
