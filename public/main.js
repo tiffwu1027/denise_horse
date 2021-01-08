@@ -84,14 +84,35 @@ gltfLoader = new GLTFLoader();
 
 const clock = new THREE.Clock();
 let horseScene;
-gltfLoader.load( './assets/deniseHorseReal.glb', function ( gltf ) {
+gltfLoader.load( './assets/deniseHorseReal_2.glb', function ( gltf ) {
     horseScene = gltf.scene;
-    const clip = gltf.animations[0];
-    const mixer = new THREE.AnimationMixer(horseScene.children[0]);
-    const action = mixer.clipAction(clip);
-    action.play();
-    horseScene.tick = (delta) => mixer.update(delta);
-    console.log(gltf);
+
+    console.log(horseScene);
+    let mixers = []
+
+    const horse_clip = gltf.animations[0];
+    const horse_mixer = new THREE.AnimationMixer(horseScene.children[3]);
+    const horse_action = horse_mixer.clipAction(horse_clip);
+    horse_action.play();
+    mixers.push(horse_mixer);
+
+    const saddle_clip = gltf.animations[1];
+    const saddle_mixer = new THREE.AnimationMixer(horseScene.children[4]);
+    const saddle_action = saddle_mixer.clipAction(saddle_clip);
+    saddle_action.play();
+    mixers.push(saddle_mixer);
+
+    const denise_clip = gltf.animations[2];
+    const denise_mixer = new THREE.AnimationMixer(horseScene.children[2]);
+    const denise_action = denise_mixer.clipAction(denise_clip);
+    denise_action.play();
+    mixers.push(denise_mixer);
+    
+    horseScene.tick = (delta) => {
+        mixers.forEach(mixer => {
+            mixer.update(delta);
+        });
+    }
     horseScene.traverse( function( child ) { 
         if ( child.isMesh ) {
             console.log('adding shadow cast');
@@ -152,7 +173,24 @@ var keyboard = new THREEx.KeyboardState();
 
 function checkKeyboard() {
     if (keyboard.pressed('left')) {
-        
+        const delta = clock.getDelta();
+        horseScene.tick(delta);
+        horseScene.rotation.y += 0.05;
+    }
+    if (keyboard.pressed('right')) {
+        const delta = clock.getDelta();
+        horseScene.tick(delta);
+        horseScene.rotation.y -= 0.05;
+    }
+    if(keyboard.pressed('up')) {
+        const delta = clock.getDelta();
+        horseScene.tick(delta);
+        horseScene.translateZ(0.5);
+    }
+    if(keyboard.pressed('down')) {
+        const delta = clock.getDelta();
+        horseScene.tick(delta);
+        horseScene.translateZ(-0.5);
     }
 }
 
@@ -165,8 +203,8 @@ function onWindowResize() {
 
 function animate() {
     requestAnimationFrame(animate);
-    const delta = clock.getDelta();
-    horseScene.tick(delta);
+
+    checkKeyboard();
 
     // cylinder.rotation.y += 0.001;
     // cylinder.rotation.x += 0.001;
