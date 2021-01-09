@@ -18,7 +18,7 @@ class World {
 
     createCamera() {
         let camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000); // view angle, aspect ratio, near, far
-        camera.position.set(0,15,30);
+        camera.position.set(0,30,60);
         camera.lookAt(scene.position);
         scene.add(camera);
         return camera;

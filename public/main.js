@@ -32,9 +32,6 @@ camera.position.set(0,30,60);
 camera.lookAt(scene.position);
 scene.add(camera);
 
-var worldFrame = new THREE.AxesHelper(2);
-scene.add(worldFrame);
-
 // Camera controls
 var cameraControl = new OrbitControls(camera, renderer.domElement);
 cameraControl.damping = 0.2;
@@ -43,7 +40,6 @@ cameraControl.autoRotate = false;
 // Light(s)
 var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8);
 directionalLight.position.set(20.0,20.0,20.0);
-directionalLight.target = worldFrame;
 directionalLight.castShadow = true;
 directionalLight.shadow.camera.zoom=0.7;
 scene.add(directionalLight);
@@ -58,25 +54,24 @@ let direction = HORSE_DIRECTION.LEFT;
 let horseScene;
 gltfLoader.load( './assets/deniseHorseReal_direction.glb', function ( gltf ) {
     horseScene = gltf.scene;
-
-    console.log(horseScene);
-    console.log(gltf.animations);
     let mixers = []
 
     const horse_clip = gltf.animations[1];
-    const horse_left = gltf.animations[2];
-    const horse_right = gltf.animations[3];
     const horse_mixer = new THREE.AnimationMixer(horseScene.children[3]);
-    const horse_mixer_L = new THREE.AnimationMixer(horseScene.children[3]);
-    const horse_mixer_R = new THREE.AnimationMixer(horseScene.children[3]);
     const horse_action = horse_mixer.clipAction(horse_clip);
-    const horse_left_action = horse_mixer_L.clipAction(horse_left);
-    const horse_right_action = horse_mixer_R.clipAction(horse_right);
     horse_action.play();
-    horse_left_action.play();
-    horse_right_action.play();
     mixers.push(horse_mixer);
+
+    const horse_left = gltf.animations[2];
+    const horse_mixer_L = new THREE.AnimationMixer(horseScene.children[3]);
+    const horse_left_action = horse_mixer_L.clipAction(horse_left);
+    horse_left_action.play();
     mixers.push(horse_mixer_L);
+
+    const horse_right = gltf.animations[3];
+    const horse_mixer_R = new THREE.AnimationMixer(horseScene.children[3]);
+    const horse_right_action = horse_mixer_R.clipAction(horse_right);
+    horse_right_action.play();
     mixers.push(horse_mixer_R);
 
     const saddle_clip = gltf.animations[0];
