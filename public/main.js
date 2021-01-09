@@ -3,6 +3,12 @@ import {OrbitControls} from '/jsm/controls/OrbitControls.js';
 import {GLTFLoader} from '/jsm/loaders/GLTFLoader.js';
 // import World from './world.js';
 
+
+let HORSE_DIRECTION = {
+    LEFT: 'left',
+    CENTER: 'center',
+    RIGHT: 'right'
+};
 const container = document.querySelector('#scene-container');
 
 // const world = new World(container);
@@ -83,35 +89,63 @@ gltfLoader = new GLTFLoader();
 // } );
 
 const clock = new THREE.Clock();
+let direction = HORSE_DIRECTION.LEFT;
 let horseScene;
-gltfLoader.load( './assets/deniseHorseReal_2.glb', function ( gltf ) {
+gltfLoader.load( './assets/deniseHorseReal_direction.glb', function ( gltf ) {
     horseScene = gltf.scene;
 
     console.log(horseScene);
+    console.log(gltf.animations);
     let mixers = []
 
-    const horse_clip = gltf.animations[0];
+    const horse_clip = gltf.animations[1];
+    const horse_left = gltf.animations[2];
+    const horse_right = gltf.animations[3];
     const horse_mixer = new THREE.AnimationMixer(horseScene.children[3]);
+    const horse_mixer_L = new THREE.AnimationMixer(horseScene.children[3]);
+    const horse_mixer_R = new THREE.AnimationMixer(horseScene.children[3]);
     const horse_action = horse_mixer.clipAction(horse_clip);
+    const horse_left_action = horse_mixer_L.clipAction(horse_left);
+    const horse_right_action = horse_mixer_R.clipAction(horse_right);
     horse_action.play();
+    horse_left_action.play();
+    horse_right_action.play();
     mixers.push(horse_mixer);
+    mixers.push(horse_mixer_L);
+    mixers.push(horse_mixer_R);
 
-    const saddle_clip = gltf.animations[1];
+    const saddle_clip = gltf.animations[0];
     const saddle_mixer = new THREE.AnimationMixer(horseScene.children[4]);
     const saddle_action = saddle_mixer.clipAction(saddle_clip);
     saddle_action.play();
     mixers.push(saddle_mixer);
 
-    const denise_clip = gltf.animations[2];
+    const denise_clip = gltf.animations[4];
     const denise_mixer = new THREE.AnimationMixer(horseScene.children[2]);
     const denise_action = denise_mixer.clipAction(denise_clip);
     denise_action.play();
     mixers.push(denise_mixer);
     
     horseScene.tick = (delta) => {
-        mixers.forEach(mixer => {
-            mixer.update(delta);
-        });
+        let index_horse = direction === HORSE_DIRECTION.LEFT ? 1 : (direction === HORSE_DIRECTION.RIGHT ? 2 : 0);
+        for (let i = 0; i < mixers.length; i++) {
+            if (i > 2 || i === index_horse) {
+                mixers[i].update(delta);
+            }
+        }
+
+        // mixers.forEach(mixer => {
+        //     mixer.update(delta);
+        // });
+    }
+
+    horseScene.setTime = (delta) => {
+        let index_horse = direction === HORSE_DIRECTION.LEFT ? 1 : (direction === HORSE_DIRECTION.RIGHT ? 2 : 0);
+        for (let i = 0; i < mixers.length; i++) {
+            if (i > 2 || i === index_horse) {
+                mixers[i].setTime(delta);
+            }
+        }
     }
     horseScene.traverse( function( child ) { 
         if ( child.isMesh ) {
@@ -161,7 +195,7 @@ texture.repeat.set(4,4);
 
 // immediately use the texture for material creation
 const material = new THREE.MeshBasicMaterial( { map: texture } );
-const geometry = new THREE.PlaneGeometry( 20, 20, 32 );
+const geometry = new THREE.PlaneGeometry( 60, 60, 32 );
 // const material = new THREE.MeshBasicMaterial( {color: 0x429cf5, side: THREE.DoubleSide} );
 const plane = new THREE.Mesh(geometry, material);
 plane.receiveShadow = true;
@@ -170,27 +204,40 @@ scene.add(plane);
 
 // Functions
 var keyboard = new THREEx.KeyboardState();
-
+let lastKeyPressed;
 function checkKeyboard() {
     if (keyboard.pressed('left')) {
-        const delta = clock.getDelta();
-        horseScene.tick(delta);
+        direction = HORSE_DIRECTION.LEFT;
+        callTick(lastKeyPressed !== 'left');
         horseScene.rotation.y += 0.05;
+        lastKeyPressed = 'left';
     }
     if (keyboard.pressed('right')) {
-        const delta = clock.getDelta();
-        horseScene.tick(delta);
+        direction = HORSE_DIRECTION.RIGHT;
+        callTick(lastKeyPressed !== 'right');
         horseScene.rotation.y -= 0.05;
+        lastKeyPressed = 'right';
     }
     if(keyboard.pressed('up')) {
-        const delta = clock.getDelta();
-        horseScene.tick(delta);
+        direction = HORSE_DIRECTION.CENTER;
+        callTick(lastKeyPressed !== 'up');
         horseScene.translateZ(0.5);
+        lastKeyPressed = 'up';
     }
     if(keyboard.pressed('down')) {
+        direction = HORSE_DIRECTION.CENTER;
+        callTick(lastKeyPressed !== 'down');
+        horseScene.translateZ(-0.5);
+        lastKeyPressed = 'down';
+    }
+}
+
+function callTick(newDirection) {
+    if (newDirection) {
+        horseScene.setTime(0);
+    } else {
         const delta = clock.getDelta();
         horseScene.tick(delta);
-        horseScene.translateZ(-0.5);
     }
 }
 
