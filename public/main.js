@@ -28,7 +28,7 @@ document.body.appendChild(renderer.domElement);
 
 // Camera
 camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000); // view angle, aspect ratio, near, far
-camera.position.set(0,15,30);
+camera.position.set(0,30,60);
 camera.lookAt(scene.position);
 scene.add(camera);
 
@@ -51,42 +51,7 @@ scene.add(directionalLight);
 var ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
 scene.add(ambientLight);
 
-
 gltfLoader = new GLTFLoader();
-
-// let donutScene;
-// gltfLoader.load( './assets/donut.glb', function ( gltf ) {
-//     donutScene = gltf.scene;
-//     donutScene.traverse( function( child ) { 
-//         if ( child.isMesh ) {
-//             console.log('adding shadow cast');
-//             child.castShadow = true;
-//         }
-//     });
-//     donutScene.scale.set(30.0,30.0,30.0);
-// 	scene.add(donutScene);
-
-// }, undefined, function ( error ) {
-// 	console.error( error );
-
-// } );
-
-// let donutScene;
-// gltfLoader.load( './assets/donut_test3.glb', (gltf) => {
-//     donutScene = gltf.scene;
-//     console.log(donutScene);
-//     donutScene.traverse( function( child ) { 
-//         if ( child.isMesh ) {
-//             console.log('adding shadow cast');
-//             child.castShadow = true;
-//         }
-//     });
-//     donutScene.scale.set(30.0,30.0,30.0);
-// 	scene.add(donutScene);
-
-// }, undefined, (error) => {
-// 	console.error( error );
-// } );
 
 const clock = new THREE.Clock();
 let direction = HORSE_DIRECTION.LEFT;
@@ -133,10 +98,6 @@ gltfLoader.load( './assets/deniseHorseReal_direction.glb', function ( gltf ) {
                 mixers[i].update(delta);
             }
         }
-
-        // mixers.forEach(mixer => {
-        //     mixer.update(delta);
-        // });
     }
 
     horseScene.setTime = (delta) => {
@@ -147,19 +108,18 @@ gltfLoader.load( './assets/deniseHorseReal_direction.glb', function ( gltf ) {
             }
         }
     }
+
     horseScene.traverse( function( child ) { 
         if ( child.isMesh ) {
-            console.log('adding shadow cast');
             child.castShadow = true;
         }
     });
+
     horseScene.scale.set(0.1, 0.1, 0.1);
-    // donutScene.scale.set(30.0,30.0,30.0);
 	scene.add(horseScene);
 
 }, undefined, function ( error ) {
 	console.error( error );
-
 } );
 
 // const lightHelper = new THREE.CameraHelper(light.shadow.camera);
@@ -196,7 +156,6 @@ texture.repeat.set(4,4);
 // immediately use the texture for material creation
 const material = new THREE.MeshBasicMaterial( { map: texture } );
 const geometry = new THREE.PlaneGeometry( 60, 60, 32 );
-// const material = new THREE.MeshBasicMaterial( {color: 0x429cf5, side: THREE.DoubleSide} );
 const plane = new THREE.Mesh(geometry, material);
 plane.receiveShadow = true;
 plane.rotation.set(- Math.PI / 2, 0, 0);
@@ -250,13 +209,7 @@ function onWindowResize() {
 
 function animate() {
     requestAnimationFrame(animate);
-
     checkKeyboard();
-
-    // cylinder.rotation.y += 0.001;
-    // cylinder.rotation.x += 0.001;
-
-    // donutScene.rotation.y += 0.005;
     renderer.render(scene, camera);
 }
 
