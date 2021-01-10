@@ -52,7 +52,7 @@ gltfLoader = new GLTFLoader();
 const clock = new THREE.Clock();
 let direction = HORSE_DIRECTION.LEFT;
 let horseScene;
-gltfLoader.load( './assets/deniseHorseReal_direction.glb', function ( gltf ) {
+gltfLoader.load( './assets/deniseHorse_withHairHelmet.glb', function ( gltf ) {
     horseScene = gltf.scene;
     let mixers = []
 
