@@ -59,90 +59,26 @@ const clock = new THREE.Clock();
 let direction = HORSE_DIRECTION.LEFT;
 let gait = GAIT.WALK;
 let horseScene;
-gltfLoader.load( './assets/deniseHorseReal_walk_canter.glb', function ( gltf ) {
+gltfLoader.load( './assets/deniseHorseReal_trot.glb', function ( gltf ) {
     horseScene = gltf.scene;
-    let mixers = []
-    console.log(horseScene);
-    console.log(gltf.animations);
-    const saddle_canter_clip = gltf.animations[0];
-    const saddle_canter_mixer = new THREE.AnimationMixer(horseScene.children[4]);
-    const saddle_canter_action = saddle_canter_mixer.clipAction(saddle_canter_clip);
-    saddle_canter_action.play();
-    mixers.push(saddle_canter_mixer);
+    let mixers = createMixers(gltf);
 
-    const denise_canter_clip = gltf.animations[9];
-    const denise_canter_mixer = new THREE.AnimationMixer(horseScene.children[2]);
-    const denise_canter_action = denise_canter_mixer.clipAction(denise_canter_clip);
-    denise_canter_action.play();
-    mixers.push(denise_canter_mixer);
-
-    const horse_canter_clip = gltf.animations[2];
-    const horse_canter_mixer = new THREE.AnimationMixer(horseScene.children[3]);
-    const horse_canter_action = horse_canter_mixer.clipAction(horse_canter_clip);
-    horse_canter_action.play();
-    mixers.push(horse_canter_mixer);
-
-    const horse_canter_left = gltf.animations[4];
-    const horse_canter_mixer_L = new THREE.AnimationMixer(horseScene.children[3]);
-    const horse_canter_left_action = horse_canter_mixer_L.clipAction(horse_canter_left);
-    horse_canter_left_action.play();
-    mixers.push(horse_canter_mixer_L);
-
-    const horse_canter_right = gltf.animations[5];
-    const horse_canter_mixer_R = new THREE.AnimationMixer(horseScene.children[3]);
-    const horse_canter_right_action = horse_canter_mixer_R.clipAction(horse_canter_right);
-    horse_canter_right_action.play();
-    mixers.push(horse_canter_mixer_R);
-
-    
-    const saddle_walk_clip = gltf.animations[1];
-    const saddle_walk_mixer = new THREE.AnimationMixer(horseScene.children[4]);
-    const saddle_walk_action = saddle_walk_mixer.clipAction(saddle_walk_clip);
-    saddle_walk_action.play();
-    mixers.push(saddle_walk_mixer);
-
-    const denise_walk_clip = gltf.animations[10];
-    const denise_walk_mixer = new THREE.AnimationMixer(horseScene.children[2]);
-    const denise_walk_action = denise_walk_mixer.clipAction(denise_walk_clip);
-    denise_walk_action.play();
-    mixers.push(denise_walk_mixer);
-
-    const horse_walk_clip = gltf.animations[6];
-    const horse_walk_mixer = new THREE.AnimationMixer(horseScene.children[3]);
-    const horse_walk_action = horse_walk_mixer.clipAction(horse_walk_clip);
-    horse_walk_action.play();
-    mixers.push(horse_walk_mixer);
-
-    const horse_walk_left = gltf.animations[7];
-    const horse_walk_mixer_L = new THREE.AnimationMixer(horseScene.children[3]);
-    const horse_walk_left_action = horse_walk_mixer_L.clipAction(horse_walk_left);
-    horse_walk_left_action.play();
-    mixers.push(horse_walk_mixer_L);
-
-    const horse_walk_right = gltf.animations[8];
-    const horse_walk_mixer_R = new THREE.AnimationMixer(horseScene.children[3]);
-    const horse_walk_right_action = horse_walk_mixer_R.clipAction(horse_walk_right);
-    horse_walk_right_action.play();
-    mixers.push(horse_walk_mixer_R);
-
-    console.log(mixers);
     horseScene.tick = (delta) => {
-        console.log('tick called');
         let index_horse = direction === HORSE_DIRECTION.LEFT ? 3 : (direction === HORSE_DIRECTION.RIGHT ? 4 : 2);
-        let gait_num = gait === GAIT.CANTER ? 0 : (gait === GAIT.WALK ? 5 : 10);
+        let gait_num = gait === GAIT.CANTER ? 0 : (gait === GAIT.WALK ? 2 : 1);
         for (let i = 0; i < 5; i++) {
             if (i < 2 || i === index_horse) {
-                mixers[i + gait_num].update(delta);
+                mixers[gait_num][i].update(delta);
             }
         }
     }
 
     horseScene.setTime = (delta) => {
         let index_horse = direction === HORSE_DIRECTION.LEFT ? 3 : (direction === HORSE_DIRECTION.RIGHT ? 4 : 2);
-        let gait_num = gait === GAIT.CANTER ? 0 : (gait === GAIT.WALK ? 5 : 10);
+        let gait_num = gait === GAIT.CANTER ? 0 : (gait === GAIT.WALK ? 2 : 1);
         for (let i = 0; i < 5; i++) {
             if (i < 2 || i === index_horse) {
-                mixers[i + gait_num].setTime(delta);
+                mixers[gait_num][i].setTime(delta);
             }
         }
     }
@@ -230,11 +166,12 @@ function checkKeyboard() {
     }
     if(keyboard.pressed('w')) {
         gait = GAIT.WALK;
-        callTick(false);
     }
     if(keyboard.pressed('c')) {
         gait = GAIT.CANTER;
-        callTick(false);
+    }
+    if(keyboard.pressed('t')) {
+        gait = GAIT.TROT;
     }
 }
 
@@ -245,6 +182,47 @@ function callTick(newDirection) {
         const delta = clock.getDelta();
         horseScene.tick(delta);
     }
+}
+
+function createMixers(gltf) {
+    let horseScene = gltf.scene;
+    let mixers = []
+    let saddle = horseScene.children[4];
+    let horse = horseScene.children[3];
+    let denise = horseScene.children[2];
+
+    // add canter animations
+    let saddle_canter = addAnimation(gltf.animations[0], saddle);
+    let denise_canter = addAnimation(gltf.animations[12], denise);
+    let horse_canter = addAnimation(gltf.animations[3], horse);
+    let horse_canter_L = addAnimation(gltf.animations[4], horse);
+    let horse_canter_R = addAnimation(gltf.animations[5], horse);
+    mixers.push([saddle_canter, denise_canter, horse_canter, horse_canter_L, horse_canter_R]);
+
+    // add trot animations
+    let saddle_trot = addAnimation(gltf.animations[1], saddle);
+    let denise_trot = addAnimation(gltf.animations[13], denise);
+    let horse_trot = addAnimation(gltf.animations[6], horse);
+    let horse_trot_L = addAnimation(gltf.animations[7], horse);
+    let horse_trot_R = addAnimation(gltf.animations[8], horse);
+    mixers.push([saddle_trot, denise_trot, horse_trot, horse_trot_L, horse_trot_R]);
+
+    // add walk animations
+    let saddle_walk = addAnimation(gltf.animations[2], saddle);
+    let denise_walk = addAnimation(gltf.animations[14], denise);
+    let horse_walk = addAnimation(gltf.animations[9], horse);
+    let horse_walk_L = addAnimation(gltf.animations[10], horse);
+    let horse_walk_R = addAnimation(gltf.animations[11], horse);
+    mixers.push([saddle_walk, denise_walk, horse_walk, horse_walk_L, horse_walk_R]);
+
+    return mixers;
+}
+
+function addAnimation(animation, model) {
+    let mixer = new THREE.AnimationMixer(model);
+    let action = mixer.clipAction(animation);
+    action.play();
+    return mixer;
 }
 
 // Loop Functions
