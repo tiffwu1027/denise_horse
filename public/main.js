@@ -116,10 +116,6 @@ var skyboxMaterial = new THREE.MeshBasicMaterial({
     side: THREE.DoubleSide
   });
 
-
-  var skyboxGeometry = new THREE.BoxGeometry(1000,1000,1000);
-  var skybox = new THREE.Mesh(skyboxGeometry,skyboxMaterial);
-  scene.add(skybox);
   
 // draw the plane
 const texture = new THREE.TextureLoader().load( 'img/sand.jpg' );
