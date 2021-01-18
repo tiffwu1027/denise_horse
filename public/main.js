@@ -1,7 +1,7 @@
 import * as THREE from '/build/three.module.js';
 import {OrbitControls} from '/jsm/controls/OrbitControls.js';
 import {GLTFLoader} from '/jsm/loaders/GLTFLoader.js';
-// import World from './world.js';
+import World from './world.js';
 
 
 let HORSE_DIRECTION = {
@@ -17,41 +17,9 @@ let GAIT = {
 };
 const container = document.querySelector('#scene-container');
 
-// const world = new World(container);
-// world.render();
+const world = new World(container);
 // define some essential variables:
-let scene, renderer, camera, gltfLoader;
-
-scene = new THREE.Scene();
-
-// renderer
-renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.gammaOutput = true;
-renderer.gammaFactor = 2.2;
-document.body.appendChild(renderer.domElement);
-
-// Camera
-camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000); // view angle, aspect ratio, near, far
-camera.position.set(0,30,60);
-camera.lookAt(scene.position);
-scene.add(camera);
-
-// Camera controls
-var cameraControl = new OrbitControls(camera, renderer.domElement);
-cameraControl.damping = 0.2;
-cameraControl.autoRotate = false;
-
-// Light(s)
-var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8);
-directionalLight.position.set(20.0,20.0,20.0);
-directionalLight.castShadow = true;
-directionalLight.shadow.camera.zoom=0.7;
-scene.add(directionalLight);
-
-var ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-scene.add(ambientLight);
+let gltfLoader;
 
 gltfLoader = new GLTFLoader();
 
@@ -90,7 +58,7 @@ gltfLoader.load( './assets/deniseHorseReal_trot.glb', function ( gltf ) {
     });
 
     horseScene.scale.set(0.1, 0.1, 0.1);
-	scene.add(horseScene);
+	world.getScene().add(horseScene);
 
 }, undefined, function ( error ) {
 	console.error( error );
@@ -98,38 +66,7 @@ gltfLoader.load( './assets/deniseHorseReal_trot.glb', function ( gltf ) {
 
 // const lightHelper = new THREE.CameraHelper(light.shadow.camera);
 // scene.add(lightHelper);
-
-// DRAW ENVIRONMENT MAP
-var skyboxCubemap = new THREE.CubeTextureLoader()
-  .setPath( 'img/' )
-  .load( [
-    'negx.png',
-    'posx.png',
-    'posy.png',
-    'negy.png',
-    'posz.png',
-    'negz.png',
-  ] );
-skyboxCubemap.format = THREE.RGBFormat;
-var skyboxMaterial = new THREE.MeshBasicMaterial({
-    envMap: skyboxCubemap,
-    side: THREE.DoubleSide
-  });
-
   
-// draw the plane
-const texture = new THREE.TextureLoader().load( 'img/sand.jpg' );
-texture.wrapS = THREE.RepeatWrapping;
-texture.wrapT = THREE.RepeatWrapping;
-texture.repeat.set(4,4);
-
-// immediately use the texture for material creation
-const material = new THREE.MeshBasicMaterial( { map: texture } );
-const geometry = new THREE.PlaneGeometry( 100, 200, 32 );
-const plane = new THREE.Mesh(geometry, material);
-plane.receiveShadow = true;
-plane.rotation.set(- Math.PI / 2, 0, 0);
-scene.add(plane);
 
 // Functions
 var keyboard = new THREEx.KeyboardState();
@@ -222,17 +159,11 @@ function addAnimation(animation, model) {
 }
 
 // Loop Functions
-function onWindowResize() {
-    camera.aspect = window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
 function animate() {
     requestAnimationFrame(animate);
     checkKeyboard();
-    renderer.render(scene, camera);
+    world.render();
 }
 
-window.addEventListener('resize', onWindowResize, false);
+window.addEventListener('resize', world.onWindowResize, false);
 animate();

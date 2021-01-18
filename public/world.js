@@ -1,14 +1,20 @@
 import * as THREE from '/build/three.module.js';
 import {OrbitControls} from '/jsm/controls/OrbitControls.js';
 import {GLTFLoader} from '/jsm/loaders/GLTFLoader.js';
+import Arena from './arena.js';
 
-let scene, renderer, camera;
+let scene, renderer, camera, cameraControl;
 
-class World {
+export default class World {
     constructor(container) {
         scene = new THREE.Scene();
         camera = this.createCamera();
         renderer = this.createRenderer();
+        cameraControl = this.createCameraControls();
+        this.createLights();
+
+        const arena = new Arena();
+        scene.add(arena);
         container.append(renderer.domElement);
     }
 
@@ -32,6 +38,44 @@ class World {
         renderer.gammaFactor = 2.2;
 
         return renderer;
+    }
+
+    createCameraControls() {
+        // Camera controls
+        let cameraControl = new OrbitControls(camera, renderer.domElement);
+        cameraControl.damping = 0.2;
+        cameraControl.autoRotate = false;
+
+        return cameraControl;
+    }
+
+    createLights() {
+        var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8);
+        directionalLight.position.set(20.0,20.0,20.0);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.camera.zoom=0.7;
+        scene.add(directionalLight);
+
+        var ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+    }
+
+    onWindowResize() {
+        camera.aspect = window.innerWidth/window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    getRenderer() {
+        return renderer;
+    }
+
+    getCamera() {
+        return camera;
+    }
+
+    getScene() {
+        return scene;
     }
 }
 
