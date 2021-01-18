@@ -1,18 +1,28 @@
 <html>
-  <head>
+<head>
     <meta charset="UTF-8">
     <title>NOT BROKEN LEG DENISE HORSE</title>
-    <style>
-        body {
-            margin: 0;
-        }
-        canvas {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
-  </head>
-  <body>
-<p>HI</p>
+    <link rel="stylesheet" href="../styles/instructions.css">
+</head>
+<body>
+    <div class="instructions">
+        <h1>WELCOME TO DENISE HORSE</h1>
+        <h2>INSTRUCTIONS:</h2>
+        <p>Use the arrow keys to navigate!</p>
+        <br>
+        <img src="../img/arrow_keys.png" width="100">
+        <br>
+        <h3>For gait control:</h3>
+        <p>Walk with the <b>w</b> key</p>
+        <p>Trot with the <b>t</b> key</p>
+        <p>Canter with the <b>c</b> key</p>
+
+        <button onclick="openThreeJS()" class="start-button">start</button>
+        <script>
+            function openThreeJS() {
+                location.href += "horse";
+            }
+        </script>
+    </div>
 </body>
 </html>
