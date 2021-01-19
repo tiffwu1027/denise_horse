@@ -25,6 +25,11 @@ export default class Arena extends THREE.Group {
         plane = new THREE.Mesh(geometry, material);
         plane.receiveShadow = true;
         plane.rotation.set(- Math.PI / 2, 0, 0);
+        
+        let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+        boundingBox.setFromObject(plane);
+        let helper = new THREE.Box3Helper(boundingBox, 0xffff00);
+        this.add(helper);
 
         return plane;
     }

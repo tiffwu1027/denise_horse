@@ -1,13 +1,12 @@
 import * as THREE from '/build/three.module.js';
-import {OrbitControls} from '/jsm/controls/OrbitControls.js';
 import {GLTFLoader} from '/jsm/loaders/GLTFLoader.js';
 import World from './world.js';
 
 
 let HORSE_DIRECTION = {
-    LEFT: 'left',
-    CENTER: 'center',
-    RIGHT: 'right'
+    CENTER: 2,
+    LEFT: 3,
+    RIGHT: 4
 };
 
 let GAIT = {
@@ -27,25 +26,23 @@ const clock = new THREE.Clock();
 let direction = HORSE_DIRECTION.LEFT;
 let gait = GAIT.WALK;
 let horseScene;
-gltfLoader.load( './assets/deniseHorseReal_trot.glb', function ( gltf ) {
+gltfLoader.load( './assets/deniseHorse.glb', function ( gltf ) {
     horseScene = gltf.scene;
     let mixers = createMixers(gltf);
 
     horseScene.tick = (delta) => {
-        let index_horse = direction === HORSE_DIRECTION.LEFT ? 3 : (direction === HORSE_DIRECTION.RIGHT ? 4 : 2);
         let gait_num = gait === GAIT.CANTER ? 0 : (gait === GAIT.WALK ? 2 : 1);
         for (let i = 0; i < 5; i++) {
-            if (i < 2 || i === index_horse) {
+            if (i < 2 || i === direction) {
                 mixers[gait_num][i].update(delta);
             }
         }
     }
 
     horseScene.setTime = (delta) => {
-        let index_horse = direction === HORSE_DIRECTION.LEFT ? 3 : (direction === HORSE_DIRECTION.RIGHT ? 4 : 2);
         let gait_num = gait === GAIT.CANTER ? 0 : (gait === GAIT.WALK ? 2 : 1);
         for (let i = 0; i < 5; i++) {
-            if (i < 2 || i === index_horse) {
+            if (i < 2 || i === direction) {
                 mixers[gait_num][i].setTime(delta);
             }
         }
@@ -58,7 +55,11 @@ gltfLoader.load( './assets/deniseHorseReal_trot.glb', function ( gltf ) {
     });
 
     horseScene.scale.set(0.1, 0.1, 0.1);
-	world.getScene().add(horseScene);
+    world.getScene().add(horseScene);
+    let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+    boundingBox.setFromObject(horseScene);
+    let helper = new THREE.Box3Helper(boundingBox, 0xffff00);
+    world.getScene().add(helper);
 
 }, undefined, function ( error ) {
 	console.error( error );

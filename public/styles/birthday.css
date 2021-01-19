@@ -1,0 +1,26 @@
+.message {
+    display: flex;
+    max-width: 50%;
+    justify-content: flex-start;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: lightcyan;
+    padding: 10px;
+    margin: 10px;
+}
+
+.wrapper-display {
+    display: flex;
+    flex-direction: row;
+}
+
+.images {
+    margin: 10px;
+
+}
+
+img {
+   border-radius: 10px;     
+   margin: 5px;
+   float: left;
+}

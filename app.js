@@ -18,6 +18,10 @@ app.get('/horse', function(req, res) {
   res.render('index.html');
 })
 
+app.get('/birthday', function(req, res) {
+  res.render('birthday.html');
+})
+
 app.listen(process.env.PORT || 8080, () =>
   console.log('Visit port ' + process.env.PORT)
 );
