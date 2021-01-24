@@ -80,31 +80,28 @@ function checkKeyboard() {
         if (keyboard.pressed('left')) {
             direction = HORSE_DIRECTION.LEFT;
             callTick(lastKeyPressed !== 'left');
-            horseScene.rotation.y += speed/2;
+            horseScene.rotation.y += speed*0.7;
             lastKeyPressed = 'left';
         } else if (keyboard.pressed('right')) {
             direction = HORSE_DIRECTION.RIGHT;
             callTick(lastKeyPressed !== 'right');
-            horseScene.rotation.y -= speed/2;
+            horseScene.rotation.y -= speed*0.7;
             lastKeyPressed = 'right';
         } else {
             callTick(lastKeyPressed !== 'up');
             lastKeyPressed = 'up';
         }
-    }
-    if (keyboard.pressed('left')) {
+    } else if (keyboard.pressed('left')) {
         direction = HORSE_DIRECTION.LEFT;
         callTick(lastKeyPressed !== 'left');
         horseScene.rotation.y += speed;
         lastKeyPressed = 'left';
-    }
-    if (keyboard.pressed('right')) {
+    } else if (keyboard.pressed('right')) {
         direction = HORSE_DIRECTION.RIGHT;
         callTick(lastKeyPressed !== 'right');
         horseScene.rotation.y -= speed;
         lastKeyPressed = 'right';
-    }
-    if(keyboard.pressed('down')) {
+    } else if(keyboard.pressed('down')) {
         direction = HORSE_DIRECTION.CENTER;
         callTick(lastKeyPressed !== 'down');
         horseScene.translateZ(-speed * 10);
