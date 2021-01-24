@@ -73,7 +73,25 @@ gltfLoader.load( './assets/deniseHorse.glb', function ( gltf ) {
 var keyboard = new THREEx.KeyboardState();
 let lastKeyPressed;
 function checkKeyboard() {
-    let speed = gait === GAIT.WALK ? 0.02 : (gait === GAIT.CANTER ? 0.06 : 0.035);
+    let speed = gait === GAIT.WALK ? 0.025 : (gait === GAIT.CANTER ? 0.07 : 0.04);
+    if(keyboard.pressed('up')) {
+        direction = HORSE_DIRECTION.CENTER;
+        horseScene.translateZ(speed * 10);
+        if (keyboard.pressed('left')) {
+            direction = HORSE_DIRECTION.LEFT;
+            callTick(lastKeyPressed !== 'left');
+            horseScene.rotation.y += speed/2;
+            lastKeyPressed = 'left';
+        } else if (keyboard.pressed('right')) {
+            direction = HORSE_DIRECTION.RIGHT;
+            callTick(lastKeyPressed !== 'right');
+            horseScene.rotation.y -= speed/2;
+            lastKeyPressed = 'right';
+        } else {
+            callTick(lastKeyPressed !== 'up');
+            lastKeyPressed = 'up';
+        }
+    }
     if (keyboard.pressed('left')) {
         direction = HORSE_DIRECTION.LEFT;
         callTick(lastKeyPressed !== 'left');
@@ -85,12 +103,6 @@ function checkKeyboard() {
         callTick(lastKeyPressed !== 'right');
         horseScene.rotation.y -= speed;
         lastKeyPressed = 'right';
-    }
-    if(keyboard.pressed('up')) {
-        direction = HORSE_DIRECTION.CENTER;
-        callTick(lastKeyPressed !== 'up');
-        horseScene.translateZ(speed * 10);
-        lastKeyPressed = 'up';
     }
     if(keyboard.pressed('down')) {
         direction = HORSE_DIRECTION.CENTER;
