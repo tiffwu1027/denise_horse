@@ -26,6 +26,9 @@ const clock = new THREE.Clock();
 let direction = HORSE_DIRECTION.LEFT;
 let gait = GAIT.WALK;
 let horseScene;
+let helper;
+let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+
 gltfLoader.load( './assets/deniseHorse.glb', function ( gltf ) {
     horseScene = gltf.scene;
     let mixers = createMixers(gltf);
@@ -56,9 +59,8 @@ gltfLoader.load( './assets/deniseHorse.glb', function ( gltf ) {
 
     horseScene.scale.set(0.1, 0.1, 0.1);
     world.getScene().add(horseScene);
-    let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
     boundingBox.setFromObject(horseScene);
-    let helper = new THREE.Box3Helper(boundingBox, 0xffff00);
+    helper = new THREE.Box3Helper(boundingBox, 0xffff00);
     world.getScene().add(helper);
 
 }, undefined, function ( error ) {
@@ -68,6 +70,93 @@ gltfLoader.load( './assets/deniseHorse.glb', function ( gltf ) {
 // const lightHelper = new THREE.CameraHelper(light.shadow.camera);
 // scene.add(lightHelper);
   
+
+const loader = new THREE.FontLoader();
+
+loader.load( '/fonts/helvetiker_regular.typeface.json', function ( font ) {
+
+	const c_letter = new THREE.TextGeometry( 'C', {
+		font: font,
+		size: 8,
+		height: 0.2,
+    } );
+
+    const a_letter = new THREE.TextGeometry( 'A', {
+		font: font,
+		size: 8,
+		height: 0.2,
+    } );
+
+    const e_letter = new THREE.TextGeometry( 'E', {
+		font: font,
+		size: 8,
+		height: 0.2,
+    } );
+
+    const b_letter = new THREE.TextGeometry( 'B', {
+		font: font,
+		size: 8,
+		height: 0.2,
+    } );
+    const f_letter = new THREE.TextGeometry( 'F', {
+		font: font,
+		size: 8,
+		height: 0.2,
+    } );
+    const k_letter = new THREE.TextGeometry( 'K', {
+		font: font,
+		size: 8,
+		height: 0.2,
+    } );
+    const h_letter = new THREE.TextGeometry( 'H', {
+		font: font,
+		size: 8,
+		height: 0.2,
+    } );
+    const m_letter = new THREE.TextGeometry( 'M', {
+		font: font,
+		size: 8,
+		height: 0.2,
+    } );
+
+    var textMaterial = new THREE.MeshPhongMaterial( 
+        { color: 0xffffff, specular: 0xffffff }
+      );
+    
+      var c_mesh = new THREE.Mesh(c_letter, textMaterial );
+      var a_mesh = new THREE.Mesh(a_letter, textMaterial );
+      var e_mesh = new THREE.Mesh(e_letter, textMaterial );
+      var b_mesh = new THREE.Mesh(b_letter, textMaterial );
+      var f_mesh = new THREE.Mesh(f_letter, textMaterial );
+      var k_mesh = new THREE.Mesh(k_letter, textMaterial );
+      var h_mesh = new THREE.Mesh(h_letter, textMaterial );
+      var m_mesh = new THREE.Mesh(m_letter, textMaterial );
+
+      e_mesh.rotation.y = Math.PI/2;
+      b_mesh.rotation.y = -Math.PI/2;
+      f_mesh.rotation.y = -Math.PI/2;
+      k_mesh.rotation.y = Math.PI/2;
+      h_mesh.rotation.y = Math.PI/2;
+      m_mesh.rotation.y = -Math.PI/2;
+      c_mesh.position.set(0,5,-105);
+      a_mesh.position.set(0,5,105);
+      e_mesh.position.set(-55,5,0);
+      b_mesh.position.set(50,5,0);
+      f_mesh.position.set(50,5,50);
+      k_mesh.position.set(-55,5,50);
+      h_mesh.position.set(-55,5,-50);
+      m_mesh.position.set(50,5,-50);
+    
+    world.getScene().add(c_mesh);
+    world.getScene().add(a_mesh);
+    world.getScene().add(e_mesh);
+    world.getScene().add(b_mesh);
+    world.getScene().add(f_mesh);
+    world.getScene().add(k_mesh);
+    world.getScene().add(h_mesh);
+    world.getScene().add(m_mesh);
+
+} );
 
 // Functions
 var keyboard = new THREEx.KeyboardState();
@@ -172,6 +261,7 @@ function addAnimation(animation, model) {
 function animate() {
     requestAnimationFrame(animate);
     checkKeyboard();
+    // helper.update(boundingBox)
     world.render();
 }
 
