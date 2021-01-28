@@ -3,7 +3,7 @@ import {OrbitControls} from '/jsm/controls/OrbitControls.js';
 import {GLTFLoader} from '/jsm/loaders/GLTFLoader.js';
 import Arena from './arena.js';
 
-let scene, renderer, camera, cameraControl;
+let scene, renderer, camera, cameraControl, arena;
 
 export default class World {
     constructor(container) {
@@ -13,7 +13,7 @@ export default class World {
         cameraControl = this.createCameraControls();
         this.createLights();
 
-        const arena = new Arena();
+        arena = new Arena();
         scene.add(arena);
         container.append(renderer.domElement);
     }
@@ -76,6 +76,10 @@ export default class World {
 
     getScene() {
         return scene;
+    }
+
+    getArena() {
+        return arena;
     }
 }
 

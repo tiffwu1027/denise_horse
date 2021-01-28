@@ -25,12 +25,16 @@ gltfLoader = new GLTFLoader();
 const clock = new THREE.Clock();
 let direction = HORSE_DIRECTION.LEFT;
 let gait = GAIT.WALK;
+let speed;
+let lastKeyPressed;
+
 let horseScene;
 let helper;
 let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
 
 gltfLoader.load( './assets/deniseHorse.glb', function ( gltf ) {
     horseScene = gltf.scene;
+    console.log(horseScene);
     let mixers = createMixers(gltf);
 
     horseScene.tick = (delta) => {
@@ -39,6 +43,26 @@ gltfLoader.load( './assets/deniseHorse.glb', function ( gltf ) {
             if (i < 2 || i === direction) {
                 mixers[gait_num][i].update(delta);
             }
+        }
+        boundingBox.setFromObject(horseScene);
+        if (!boundingBox.isIntersectionBox(world.getArena().getBoundingBox())) {
+            switch (lastKeyPressed) {
+                case "up":
+                    horseScene.translateZ(-speed * 10);
+                    break;
+                case "down":
+                    horseScene.translateZ(speed * 10);
+                    break;
+                case "left":
+                    horse.rotation.y -= speed;
+                    break;
+                case "right":
+                    horse.rotation.y += speed;
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 
@@ -60,8 +84,7 @@ gltfLoader.load( './assets/deniseHorse.glb', function ( gltf ) {
     horseScene.scale.set(0.1, 0.1, 0.1);
     world.getScene().add(horseScene);
     boundingBox.setFromObject(horseScene);
-    helper = new THREE.Box3Helper(boundingBox, 0xffff00);
-    world.getScene().add(helper);
+
 
 }, undefined, function ( error ) {
 	console.error( error );
@@ -160,21 +183,21 @@ loader.load( '/fonts/helvetiker_regular.typeface.json', function ( font ) {
 
 // Functions
 var keyboard = new THREEx.KeyboardState();
-let lastKeyPressed;
 function checkKeyboard() {
-    let speed = gait === GAIT.WALK ? 0.025 : (gait === GAIT.CANTER ? 0.07 : 0.04);
+    speed = gait === GAIT.WALK ? 0.025 : (gait === GAIT.CANTER ? 0.07 : 0.04);
+    let rotation_speed = gait === GAIT.WALK ? 0.02 : 0.04;
     if(keyboard.pressed('up')) {
         direction = HORSE_DIRECTION.CENTER;
         horseScene.translateZ(speed * 10);
         if (keyboard.pressed('left')) {
             direction = HORSE_DIRECTION.LEFT;
             callTick(lastKeyPressed !== 'left');
-            horseScene.rotation.y += speed*0.7;
+            horseScene.rotation.y += rotation_speed*0.7;
             lastKeyPressed = 'left';
         } else if (keyboard.pressed('right')) {
             direction = HORSE_DIRECTION.RIGHT;
             callTick(lastKeyPressed !== 'right');
-            horseScene.rotation.y -= speed*0.7;
+            horseScene.rotation.y -= rotation_speed*0.7;
             lastKeyPressed = 'right';
         } else {
             callTick(lastKeyPressed !== 'up');
@@ -183,12 +206,12 @@ function checkKeyboard() {
     } else if (keyboard.pressed('left')) {
         direction = HORSE_DIRECTION.LEFT;
         callTick(lastKeyPressed !== 'left');
-        horseScene.rotation.y += speed;
+        horseScene.rotation.y += rotation_speed;
         lastKeyPressed = 'left';
     } else if (keyboard.pressed('right')) {
         direction = HORSE_DIRECTION.RIGHT;
         callTick(lastKeyPressed !== 'right');
-        horseScene.rotation.y -= speed;
+        horseScene.rotation.y -= rotation_speed;
         lastKeyPressed = 'right';
     } else if(keyboard.pressed('down')) {
         direction = HORSE_DIRECTION.CENTER;
@@ -205,6 +228,13 @@ function checkKeyboard() {
     if(keyboard.pressed('t')) {
         gait = GAIT.TROT;
     }
+
+    if(keyboard.pressed('r')) {
+        //reset position
+        horseScene.position.set(0,0,0);
+        horseScene.rotation.set(0,0,0);
+
+    }
 }
 
 function callTick(newDirection) {
@@ -219,9 +249,9 @@ function callTick(newDirection) {
 function createMixers(gltf) {
     let horseScene = gltf.scene;
     let mixers = []
-    let saddle = horseScene.children[4];
-    let horse = horseScene.children[3];
-    let denise = horseScene.children[2];
+    let saddle = horseScene.children[3];
+    let horse = horseScene.children[2];
+    let denise = horseScene.children[1];
 
     // add canter animations
     let saddle_canter = addAnimation(gltf.animations[0], saddle);

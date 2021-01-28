@@ -1,6 +1,6 @@
 import * as THREE from '/build/three.module.js';
 
-let texture, material, geometry, plane;
+let texture, material, geometry, plane, boundingBox, innerPlane;
 
 export default class Arena extends THREE.Group {
     constructor() {
@@ -8,7 +8,11 @@ export default class Arena extends THREE.Group {
         texture = this.createTexture();
         material = new THREE.MeshBasicMaterial( { map: texture } );
         geometry = new THREE.PlaneGeometry( 100, 200, 32 );
-        plane = this.createPlane();
+        let inner_geometry = new THREE.PlaneGeometry( 80, 180, 32 );
+        plane = this.createPlane(geometry);
+        innerPlane = this.createPlane(inner_geometry);
+        this.addBoundingBox(innerPlane);
+        this.add(innerPlane)
         this.add(plane);
     }
 
@@ -21,16 +25,19 @@ export default class Arena extends THREE.Group {
         return texture;
     }
 
-    createPlane() {
-        plane = new THREE.Mesh(geometry, material);
-        plane.receiveShadow = true;
-        plane.rotation.set(- Math.PI / 2, 0, 0);
-        
-        let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-        boundingBox.setFromObject(plane);
-        let helper = new THREE.Box3Helper(boundingBox, 0xffff00);
-        this.add(helper);
+    createPlane(plane_geometry) {
+        let new_plane = new THREE.Mesh(plane_geometry, material);
+        new_plane.receiveShadow = true;
+        new_plane.rotation.set(- Math.PI / 2, 0, 0);
+        return new_plane;
+    }
 
-        return plane;
+    addBoundingBox(plane_to_bound) {
+        boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+        boundingBox.setFromObject(plane_to_bound);
+    }
+
+    getBoundingBox() {
+        return boundingBox;
     }
 }
