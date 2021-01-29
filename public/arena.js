@@ -8,11 +8,8 @@ export default class Arena extends THREE.Group {
         texture = this.createTexture();
         material = new THREE.MeshBasicMaterial( { map: texture } );
         geometry = new THREE.PlaneGeometry( 100, 200, 32 );
-        let inner_geometry = new THREE.PlaneGeometry( 80, 180, 32 );
-        plane = this.createPlane(geometry);
-        innerPlane = this.createPlane(inner_geometry);
-        this.addBoundingBox(innerPlane);
-        this.add(innerPlane)
+        plane = this.createPlane();
+        this.addBoundingBox(plane);
         this.add(plane);
     }
 
@@ -25,8 +22,8 @@ export default class Arena extends THREE.Group {
         return texture;
     }
 
-    createPlane(plane_geometry) {
-        let new_plane = new THREE.Mesh(plane_geometry, material);
+    createPlane() {
+        let new_plane = new THREE.Mesh(geometry, material);
         new_plane.receiveShadow = true;
         new_plane.rotation.set(- Math.PI / 2, 0, 0);
         return new_plane;
