@@ -291,7 +291,6 @@ function addAnimation(animation, model) {
 function animate() {
     requestAnimationFrame(animate);
     checkKeyboard();
-    // helper.update(boundingBox)
     world.render();
 }
 
